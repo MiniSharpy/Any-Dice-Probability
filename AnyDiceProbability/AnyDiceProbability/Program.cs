@@ -11,9 +11,9 @@ namespace AnyDiceProbability
     {
         private static void Main(string[] args)
         {
-            Probability probability = CreateProbability(1, 6) + CreateProbability(1, 8);
+            Dice dice = new Dice(1, 6) + new Dice(1, 8) + new Dice(1, 10);
 
-            DisplayCollection(probability.Probabilities);
+            DisplayCollection(dice.Probabilities);
         }
 
         private static void DisplayCollection(ICollection Collection)
@@ -24,12 +24,6 @@ namespace AnyDiceProbability
                 Console.WriteLine(item);
             }
             Console.Read();
-        }
-
-        private static Probability CreateProbability(int diceQuantity, int dieSides)
-        {
-            Dice dice = new Dice(diceQuantity, dieSides);
-            return new Probability(dice.GenerateAllOutcomes(), dice.Probabilities);
         }
     }
 }

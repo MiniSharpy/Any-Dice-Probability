@@ -13,6 +13,9 @@ namespace AnyDiceProbability
     {
         readonly int DiceQuantity;
         readonly int DieSides;
+
+        List<int> AllOutcomes;
+
         public Dictionary<int, double> Probabilities { get; private set; }
 
         public Dice(int diceQuantity, int dieSides)
@@ -20,9 +23,15 @@ namespace AnyDiceProbability
             DiceQuantity = diceQuantity;
             DieSides = dieSides;
 
-            List<int> allOutcomes = GenerateAllOutcomes();
-            List<int> discreteOutcomes = allOutcomes.Distinct().ToList();//Distinct == Discrete.
-            Probabilities = CalculateProbabilities(allOutcomes, discreteOutcomes);
+            AllOutcomes = GenerateAllOutcomes();
+            List<int> discreteOutcomes = AllOutcomes.Distinct().ToList();//Distinct == Discrete.
+            Probabilities = CalculateProbabilities(AllOutcomes, discreteOutcomes);
+        }
+
+        private Dice(List<int> allOutcomes, Dictionary<int, double> probabilities)
+        {
+            AllOutcomes = allOutcomes;
+            Probabilities = probabilities;
         }
 
         public static Dictionary<int, double> CalculateProbabilities(List<int> allOutcomes, List<int> discreteOutcomes)
@@ -88,17 +97,18 @@ namespace AnyDiceProbability
             return dieDiscreteOutcome;
         }
 
-        public static Dictionary<int, double> operator +(Dice a, Dice b)//Might be expected to return same type of objects.
+        public static Dice operator +(Dice a, Dice b)
         {
-            List<int> outcomesA = a.GenerateAllOutcomes();
-            List<int> outcomesB = b.GenerateAllOutcomes();
+            List<int> outcomesA = a.AllOutcomes;
+            List<int> outcomesB = b.AllOutcomes;
 
-            List<int> cartesianProduct = Dice.CartesianProduct(outcomesA, outcomesB);
+            List<int> cartesianProduct = CartesianProduct(outcomesA, outcomesB);
 
             List<int> allOutcomes = cartesianProduct;
             List<int> discreteOutcomes = cartesianProduct.Distinct().ToList();//Distinct == Discrete.
 
-            return CalculateProbabilities(allOutcomes, discreteOutcomes);
+            Dictionary<int, double> probabilities = Dice.CalculateProbabilities(allOutcomes, discreteOutcomes);
+            return new Dice(allOutcomes, probabilities);
         }
     }
 }
